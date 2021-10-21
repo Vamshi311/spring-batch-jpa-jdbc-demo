@@ -27,6 +27,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import com.example.springbatchjpajdbcdemo.listener.JobCompletionNotificationListener;
 import com.example.springbatchjpajdbcdemo.model.Line;
 import com.example.springbatchjpajdbcdemo.processor.LinesProcessor;
+import com.example.springbatchjpajdbcdemo.reader.CompositeJdbcPagingItemReader;
 import com.example.springbatchjpajdbcdemo.reader.JdbcCursorLineReader;
 import com.example.springbatchjpajdbcdemo.repository.LineRepository;
 import com.example.springbatchjpajdbcdemo.writer.JpaLinesWriter;
@@ -61,6 +62,10 @@ public class JobConfig {
 
 	@Autowired
 	private JpaLinesWriter jpaLinesWriter;
+
+	@Qualifier("compositeJdbcPagingItemReader")
+	@Autowired
+	private CompositeJdbcPagingItemReader<Line> compositeJdbcPagingItemReader;
 
 	@Qualifier("jdbcBatchLineWriter")
 	@Autowired
@@ -115,7 +120,8 @@ public class JobConfig {
 				// .reader(reader()).processor(linesProcessor)
 				// .reader(jdbcCursorLineReader)
 				// .reader(jdbcCursorAlternateReader())
-				.reader(pagingItemReader)
+				// .reader(pagingItemReader)
+				.reader(compositeJdbcPagingItemReader)
 				// below are the options for line writer. we can use RepositoryItemWriter or our
 				// custom linesWriter
 				// .writer(writer())
