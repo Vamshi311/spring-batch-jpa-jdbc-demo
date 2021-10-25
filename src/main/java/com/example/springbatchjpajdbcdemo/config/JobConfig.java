@@ -9,8 +9,10 @@ import javax.sql.DataSource;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
@@ -71,6 +73,9 @@ public class JobConfig {
 	@Autowired
 	private ItemWriter<Line> jdbcBatchLineWriter;
 
+	@Autowired
+	private JobRegistry jobRegistry;
+
 	@Bean
 	public RepositoryItemReader<Line> reader() {
 		
@@ -122,6 +127,7 @@ public class JobConfig {
 				// .reader(jdbcCursorAlternateReader())
 				// .reader(pagingItemReader)
 				.reader(compositeJdbcPagingItemReader)
+				.processor(linesProcessor)
 				// below are the options for line writer. we can use RepositoryItemWriter or our
 				// custom linesWriter
 				// .writer(writer())
@@ -133,6 +139,15 @@ public class JobConfig {
 	public Job linesJob(JobCompletionNotificationListener listener) {
 		return jobBuilderFactory.get("linesJob").incrementer(new RunIdIncrementer()).listener(listener)
 				.start(lineStep()).build();
+	}
+
+	// This is need to register all jobs as they are created. Once registered, we
+	// can start jobs using JobOperator
+	@Bean
+	public JobRegistryBeanPostProcessor jobRegistryBeanPostProcessor() {
+		JobRegistryBeanPostProcessor postProcessor = new JobRegistryBeanPostProcessor();
+		postProcessor.setJobRegistry(jobRegistry);
+		return postProcessor;
 	}
 
 }

@@ -43,6 +43,7 @@ public class JdbcPagingReaderConfig {
 		compositeJdbcPagingItemReader.setQueryProvider(queryProvider);
 		compositeJdbcPagingItemReader.setFetchSize(3);
 		compositeJdbcPagingItemReader.setPageSize(3);
+		compositeJdbcPagingItemReader.setSaveState(true);
 		compositeJdbcPagingItemReader.setRowMapper(new BeanPropertyRowMapper<>(Line.class));
 		compositeJdbcPagingItemReader.setPageProcessor(linePageProcessor);
 

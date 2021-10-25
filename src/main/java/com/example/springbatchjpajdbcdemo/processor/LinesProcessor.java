@@ -15,6 +15,9 @@ public class LinesProcessor implements ItemProcessor<Line, Line> {
 
 	@Override
 	public Line process(Line line) throws Exception {
+//		if (line.getId() == 4) {
+//			throw new Exception("just tetsing");
+//		}
 		line.setAge(new Long(LocalDate.now().getYear() - line.getDob().getYear()));
 		log.info("processed {}", line);
 		return line;
